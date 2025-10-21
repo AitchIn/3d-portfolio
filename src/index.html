@@ -17,5 +17,10 @@
     ws.onmessage = (e) => { if (e.data === 'reload') location.reload(); };
 </script>
 
+<script src="./index.js"></script>
+<script>
+const ws = new WebSocket('ws://' + location.host);
+ws.onmessage = (e) => { if(e.data==='reload') location.reload(); };
+</script>
 </body>
 </html>

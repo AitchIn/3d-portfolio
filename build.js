@@ -5,19 +5,21 @@ const path = require('path');
 const http = require('http');
 const WebSocket = require('ws');
 
+// CLI Argumente
+const args = process.argv.slice(2);
+const isWatch = args.includes('--watch');
+const outDirIndex = args.indexOf('--outdir');
+const outDir = outDirIndex !== -1 ? args[outDirIndex + 1] : './dist';
 const srcDir = './src';
-const outDir = './dist';
 const clients = new Set();
 
-// HTML-Dateien kopieren und Hot Reload Script einfügen
 function copyHtmlFiles(entryPoints) {
     const htmlFiles = fs.readdirSync(srcDir).filter(f => f.endsWith('.html'));
     htmlFiles.forEach(file => {
         const htmlPath = path.join(srcDir, file);
         let content = fs.readFileSync(htmlPath, 'utf-8');
-
-        // Auto <script> Tag für die JS-Datei (gleicher Name wie HTML)
         const name = path.basename(file, '.html');
+
         if (entryPoints.some(e => path.basename(e, '.ts') === name)) {
             content = content.replace(
                 /<\/body>/,
@@ -34,71 +36,64 @@ ws.onmessage = (e) => { if(e.data==='reload') location.reload(); };
     });
 }
 
-// Hot Reload Notification
 function notifyReload() {
     for (const ws of clients) {
         if (ws.readyState === WebSocket.OPEN) ws.send('reload');
     }
 }
 
-// Build + Watch
 async function buildAndWatch() {
-    if (!fs.existsSync(outDir)) fs.mkdirSync(outDir);
+    if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
 
-    // Alle TS-Dateien als EntryPoints
     const entryPoints = fs.readdirSync(srcDir)
         .filter(f => f.endsWith('.ts'))
         .map(f => path.join(srcDir, f));
 
-    // Esbuild Kontext
     const ctx = await esbuild.context({
         entryPoints,
         bundle: true,
         outdir: outDir,
         sourcemap: true,
-        plugins: [sassPlugin()], // SCSS inline ins JS
+        plugins: [sassPlugin()],
         loader: { '.ts': 'ts', '.scss': 'css' },
     });
 
-    // Erstes Build
     await ctx.rebuild();
-    console.log('✅ Initial build complete');
+    console.log(`✅ Initial build complete -> ${outDir}`);
 
-    // HTML-Dateien kopieren
     copyHtmlFiles(entryPoints);
 
-    // Watch starten
-    await ctx.watch();
-    console.log('👀 Watching for changes...');
+    if (isWatch) {
+        await ctx.watch();
+        console.log('👀 Watching for changes...');
 
-    // Watcher für HTML-Dateien
-    fs.watch(srcDir, (event, filename) => {
-        if (!filename) return;
-        if (filename.endsWith('.html')) {
-            copyHtmlFiles(entryPoints);
-            notifyReload();
-            console.log(`🔁 HTML updated: ${filename}`);
-        }
-    });
-
-    // HTTP Server + WebSocket für Hot Reload
-    const server = http.createServer((req, res) => {
-        const url = req.url === '/' ? '/index.html' : req.url;
-        const filePath = path.join(outDir, url);
-        fs.readFile(filePath, (err, data) => {
-            if (err) {
-                res.writeHead(404);
-                res.end('Not Found');
-            } else {
-                res.end(data);
+        fs.watch(srcDir, (event, filename) => {
+            if (!filename) return;
+            if (filename.endsWith('.html') || filename.endsWith('.ts') || filename.endsWith('.scss')) {
+                copyHtmlFiles(entryPoints);
+                notifyReload();
+                console.log(`🔁 File updated: ${filename}`);
             }
         });
-    });
 
-    const wss = new WebSocket.Server({ server });
-    wss.on('connection', ws => clients.add(ws));
+        const server = http.createServer((req, res) => {
+            const url = req.url === '/' ? '/index.html' : req.url;
+            const filePath = path.join(outDir, url);
+            fs.readFile(filePath, (err, data) => {
+                if (err) {
+                    res.writeHead(404);
+                    res.end('Not Found');
+                } else {
+                    res.end(data);
+                }
+            });
+        });
 
-    server.listen(8080, () => console.log('✅ Dev server running at http://localhost:8080'));
+        const wss = new WebSocket.Server({ server });
+        wss.on('connection', ws => clients.add(ws));
+
+        server.listen(8080, () => console.log('✅ Dev server running at http://localhost:8080'));
+    }
 }
 
 buildAndWatch().catch(err => {
