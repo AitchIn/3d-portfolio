@@ -1,8 +1,9 @@
-const fs = require('fs');
-const path = require('path');
 const esbuild = require('esbuild');
 const sassPlugin = require('esbuild-sass-plugin').default;
+const httpServer = require('http-server');
+const path = require('path');
 
+// Erstelle den Build im Watch-Modus
 esbuild.build({
     entryPoints: ['./src/index.ts'],
     bundle: true,
@@ -14,12 +15,23 @@ esbuild.build({
         '.ts': 'ts',
         '.scss': 'text',
     },
+    watch: {
+        onRebuild(error, result) {
+            if (error) {
+                console.error('Build failed:', error);
+            } else {
+                console.log('Build succeeded:', result);
+            }
+        },
+    },
 }).then(() => {
-    console.log('Build completed!');
+    console.log('Watching for changes...');
 
-    // Kopiere die HTML-Datei in das dist-Verzeichnis
-    fs.copyFileSync(path.resolve(__dirname, 'public/index.html'), path.resolve(__dirname, 'dist/index.html'));
-    console.log('HTML-Datei in dist/ kopiert');
+    // Starte den HTTP-Server im dist/ Ordner
+    const server = httpServer.createServer({ root: './dist' });
+    server.listen(8080, () => {
+        console.log('Server läuft auf http://localhost:8080');
+    });
 }).catch((error) => {
     console.error(error);
     process.exit(1);
