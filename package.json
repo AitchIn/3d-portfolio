@@ -19,6 +19,8 @@
   "homepage": "https://github.com/AitchIn/3d-portfolio#readme",
   "devDependencies": {
     "@types/node": "^24.9.1",
+    "esbuild": "^0.25.11",
+    "esbuild-sass-plugin": "^3.3.1",
     "sass": "^1.93.2",
     "typescript": "^5.9.3"
   }
