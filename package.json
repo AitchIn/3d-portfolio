@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node build.js --watch --outdir src",
-    "dev": "node build.js --watch --outdir src",
-    "build": "node build.js --outdir dist",
+    "dev": "node build.js --dev",
+    "start": "node build.js --dev",
+    "build": "node build.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
