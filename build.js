@@ -8,7 +8,7 @@ const WebSocket = require('ws');
 const outdir = './dist';
 const srcDir = './src';
 
-// Helper: alle HTML-Dateien kopieren
+// Helper: copy all HTML-Files
 function copyHtmlFiles() {
     const files = fs.readdirSync(srcDir).filter(f => f.endsWith('.html'));
     files.forEach(file => {
@@ -45,13 +45,13 @@ async function buildAndWatch() {
         },
     });
 
-    // 3️. Erstes Build
+    // 3️. First Build
     await ctx.rebuild();
 
-    // 4️. Watch starten
+    // 4️. Watch start
     await ctx.watch();
 
-    // 5️. Watcher für HTML-Dateien
+    // 5️. Watcher for HTML-Files
     fs.watch(srcDir, (event, filename) => {
         if (filename.endsWith('.html')) {
             copyHtmlFiles();
