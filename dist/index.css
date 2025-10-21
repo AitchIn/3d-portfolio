@@ -1,0 +1,17 @@
+/* src/styles.scss */
+body {
+  font-family: sans-serif;
+  background: #121212;
+  color: #e0e0e0;
+  text-align: center;
+  margin-top: 10vh;
+}
+body h1 {
+  color: #00bcd4;
+  font-size: 3rem;
+}
+body p {
+  color: #aaa;
+  font-size: 1.2rem;
+}
+/*# sourceMappingURL=index.css.map */

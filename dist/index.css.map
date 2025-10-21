@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/styles.scss"],
+  "sourcesContent": ["body {\r\n  font-family: sans-serif;\r\n  background: #121212;\r\n  color: #e0e0e0;\r\n  text-align: center;\r\n  margin-top: 10vh;\r\n\r\n  h1 {\r\n    color: #00bcd4;\r\n    font-size: 3rem;\r\n  }\r\n\r\n  p {\r\n    color: #aaa;\r\n    font-size: 1.2rem;\r\n  }\r\n}\r\n"],
+  "mappings": ";AAAA;AACE,eAAA;AACA,cAAA;AACA,SAAA;AACA,cAAA;AACA,cAAA;;AAEA,KAAA;AACE,SAAA;AACA,aAAA;;AAGF,KAAA;AACE,SAAA;AACA,aAAA;;",
+  "names": []
+}

@@ -1,7 +1,7 @@
 {
   "version": 3,
-  "sources": [],
-  "sourcesContent": [],
-  "mappings": "",
+  "sources": ["../src/index.ts"],
+  "sourcesContent": ["import './styles.scss';\r\n\r\nconst app = document.getElementById('app');\r\nif (app) {\r\n    app.innerHTML = `\r\n    <h1>Hello 3D Portfolio \uD83D\uDC4B</h1>\r\n    <p>Edit this file to see Hot Reload in action!</p>\r\n  `;\r\n}\r\n"],
+  "mappings": ";;;AAEA,MAAM,MAAM,SAAS,eAAe,KAAK;AACzC,MAAI,KAAK;AACL,QAAI,YAAY;AAAA;AAAA;AAAA;AAAA,EAIpB;",
   "names": []
 }
