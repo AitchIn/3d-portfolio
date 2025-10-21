@@ -16,5 +16,10 @@
   "bugs": {
     "url": "https://github.com/AitchIn/3d-portfolio/issues"
   },
-  "homepage": "https://github.com/AitchIn/3d-portfolio#readme"
+  "homepage": "https://github.com/AitchIn/3d-portfolio#readme",
+  "devDependencies": {
+    "@types/node": "^24.9.1",
+    "sass": "^1.93.2",
+    "typescript": "^5.9.3"
+  }
 }
