@@ -26,10 +26,10 @@ function notifyReload() {
 
 // Build / Watch
 async function buildAndWatch() {
-    // 1️⃣ Initial copy HTML
+    // 1️. Initial copy HTML
     copyHtmlFiles();
 
-    // 2️⃣ Esbuild context für TS + SCSS
+    // 2️. Esbuild context für TS + SCSS
     const ctx = await esbuild.context({
         entryPoints: fs.readdirSync(srcDir)
             .filter(f => f.endsWith('.ts'))
@@ -45,24 +45,21 @@ async function buildAndWatch() {
         },
     });
 
-    // 3️⃣ Erstes Build
+    // 3️. Erstes Build
     await ctx.rebuild();
-    console.log('✅ Initial build complete');
 
-    // 4️⃣ Watch starten
+    // 4️. Watch starten
     await ctx.watch();
-    console.log('👀 Watching for changes...');
 
-    // 5️⃣ Watcher für HTML-Dateien
+    // 5️. Watcher für HTML-Dateien
     fs.watch(srcDir, (event, filename) => {
         if (filename.endsWith('.html')) {
             copyHtmlFiles();
             notifyReload();
-            console.log(`🔁 HTML updated: ${filename}`);
         }
     });
 
-    // 6️⃣ HTTP Server
+    // 6️. HTTP Server
     const server = http.createServer((req, res) => {
         const url = req.url === '/' ? '/index.html' : req.url;
         const filePath = path.join(outdir, url);
@@ -79,7 +76,7 @@ async function buildAndWatch() {
     const wss = new WebSocket.Server({ server });
     wss.on('connection', ws => clients.add(ws));
 
-    server.listen(8080, () => console.log('✅ Dev server running at http://localhost:8080'));
+    server.listen(8080, () => console.log('Dev server running at http://localhost:8080'));
 }
 
 buildAndWatch().catch(err => {
